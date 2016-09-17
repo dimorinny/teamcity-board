@@ -1,12 +1,12 @@
 package config
 
 type HostConfig struct {
-	Host string
-	Port int
+	Host       string
+	Port       int
 	AuthHeader string
 }
 
 type Config struct {
-	Host HostConfig
+	Host     HostConfig
 	Interval int
 }

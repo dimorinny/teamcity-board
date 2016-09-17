@@ -2,6 +2,7 @@ package screen
 
 import (
 	"bytes"
+	"github.com/dimorinny/teamcity-board/data"
 	"github.com/dimorinny/teamcity-board/data/model"
 	ui "github.com/gizak/termui"
 	"log"
@@ -9,7 +10,7 @@ import (
 )
 
 const (
-	agentsTitle     = "Agents [Shift]"
+	agentsTitle     = "Agents"
 	buildQueueTitle = "Queue"
 )
 
@@ -31,39 +32,42 @@ func (boardScreen BoardScreen) Content() []*ui.Row {
 
 	return []*ui.Row{
 		ui.NewRow(
+			ui.NewCol(3, 0, boardScreen.getBuildList()),
+			ui.NewCol(2, 0, boardScreen.getBuildProgresses()...),
+		),
+		ui.NewRow(
 			ui.NewCol(2, 0, boardScreen.getAgentList()),
 			ui.NewCol(2, 0, boardScreen.getBuildQueue()),
 		),
-		ui.NewRow(
-			ui.NewCol(3, 0, boardScreen.getBuildList()),
-			ui.NewCol(3, 0, boardScreen.getBuildProgresses()...),
-		),
 	}
 }
 
-func (agentScreen *BoardScreen) loadAgents() {
-	agents, err := agentScreen.context.client.LoadAgents()
+func (boardScreen *BoardScreen) loadAgents() {
+	agents, err := boardScreen.context.client.LoadAgents()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	agentScreen.agents = agents
+	boardScreen.agents = agents
 }
 
-func (agentScreen *BoardScreen) loadBuilds() {
-	builds, err := agentScreen.context.client.LoadBuilds()
+func (boardScreen *BoardScreen) loadBuilds() {
+	builds, err := boardScreen.context.client.LoadBuilds(
+		"AndroidProjects_AvitoPro_Build",
+		10,
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	agentScreen.builds = builds
+	boardScreen.builds = builds
 }
 
-func (agentScreen BoardScreen) getAgentList() *ui.List {
+func (boardScreen BoardScreen) getAgentList() *ui.List {
 	ls := ui.NewList()
 	ls.Border = true
 	ls.BorderLabel = agentsTitle
-	for index, agent := range agentScreen.agents {
+	for index, agent := range boardScreen.agents {
 		buffer := bytes.NewBufferString("[")
 		buffer.WriteString(strconv.Itoa(index))
 		buffer.WriteString("] ")
@@ -72,13 +76,13 @@ func (agentScreen BoardScreen) getAgentList() *ui.List {
 		ls.Items = append(ls.Items, buffer.String())
 	}
 	ls.ItemFgColor = ui.ColorYellow
-	ls.Height = len(ls.Items) * 2
+	ls.Height = len(boardScreen.agents) + boardHeight
 
 	return ls
 }
 
 func (boardScreen BoardScreen) getBuildList() *ui.List {
-	length := len(boardScreen.builds) * 2
+	length := len(boardScreen.builds)
 
 	builds := ui.NewList()
 	for index, build := range boardScreen.builds {
@@ -102,26 +106,30 @@ func (boardScreen BoardScreen) getBuildProgresses() []ui.GridBufferer {
 	bars := []ui.GridBufferer{}
 
 	for _, build := range boardScreen.builds {
-		if build.State == "finished" {
+		if build.State == data.StateRunning {
 			g := ui.NewGauge()
 			g.Border = false
-			g.Percent = 50
+			g.Percent = build.Percentage
+			g.Float = ui.AlignLeft
 			g.Height = 1
-			g.Y = 11
-			g.BarColor = ui.ColorRed
+
+			if build.Status == data.StatusFail {
+				g.BarColor = ui.ColorRed
+			} else {
+				g.BarColor = ui.ColorGreen
+			}
 			bars = append(bars, ui.GridBufferer(g))
 		}
 	}
 
-
 	return bars
 }
 
-func (agentScreen BoardScreen) getBuildQueue() *ui.List {
+func (boardScreen BoardScreen) getBuildQueue() *ui.List {
 	ls := ui.NewList()
 	ls.Border = true
 	ls.BorderLabel = buildQueueTitle
-	for index, agent := range agentScreen.agents {
+	for index, agent := range boardScreen.agents {
 		buffer := bytes.NewBufferString("[")
 		buffer.WriteString(strconv.Itoa(index))
 		buffer.WriteString("] ")
@@ -130,7 +138,7 @@ func (agentScreen BoardScreen) getBuildQueue() *ui.List {
 		ls.Items = append(ls.Items, buffer.String())
 	}
 
-	length := len(agentScreen.agents)
+	length := len(boardScreen.agents)
 
 	if length <= 5 {
 		ls.ItemFgColor = ui.ColorGreen
@@ -140,13 +148,13 @@ func (agentScreen BoardScreen) getBuildQueue() *ui.List {
 		ls.ItemFgColor = ui.ColorRed
 	}
 
-	ls.Height = len(ls.Items) * 2
+	ls.Height = length + boardHeight
 
 	return ls
 }
 
 func (boardScreen BoardScreen) StartHandlers() {
-	boardScreen.context.AddHandler("/sys/kbd/w", func(event ui.Event) {
+	boardScreen.context.AddKeyHandler("w", func(event ui.Event) {
 		boardScreen.context.StartScreen(NewAgentScreen(boardScreen.context))
 	})
 

@@ -1,27 +1,27 @@
 package data
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/dimorinny/teamcity-board/config"
 	"github.com/dimorinny/teamcity-board/data/model"
 	"net/http"
-	"encoding/json"
-	"fmt"
 )
 
 const (
 	StateRunning = "running"
-	StatusFail = "FAILURE"
+	StatusFail   = "FAILURE"
 )
 
 type Teamcity struct {
 	configuration config.HostConfig
-	client http.Client
+	client        http.Client
 }
 
 func NewTeamcity(configuration config.HostConfig) *Teamcity {
 	return &Teamcity{
 		configuration: configuration,
-		client: http.Client{},
+		client:        http.Client{},
 	}
 }
 
@@ -34,12 +34,15 @@ func (teamcity *Teamcity) LoadAgents() ([]model.Agent, error) {
 	return agents.Agents, nil
 }
 
-func (teamcity *Teamcity) LoadBuilds() ([]model.Build, error) {
+func (teamcity *Teamcity) LoadBuilds(buildType string, count int) ([]model.Build, error) {
 	builds := &model.BuildsResponse{}
-	// TODO: remove build type hardcode
 	err := teamcity.load(
 		"GET",
-		"builds/?locator=buildType:AndroidProjects_AvitoPro_Build,branch:(default:any),state:any",
+		fmt.Sprintf(
+			"builds/?locator=buildType:%s,branch:(default:any),state:any,count:%d",
+			buildType,
+			count,
+		),
 		builds,
 	)
 	if err != nil {
@@ -81,4 +84,3 @@ func (teamcity *Teamcity) load(method, url string, response interface{}) error {
 	defer resp.Body.Close()
 	return json.NewDecoder(resp.Body).Decode(response)
 }
-

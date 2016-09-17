@@ -1,8 +1,8 @@
 package model
 
 type BaseResponse struct {
-	Count int `json:"count"`
-	Href string `json:"href"`
+	Count int    `json:"count"`
+	Href  string `json:"href"`
 }
 
 type AgentsResponse struct {
@@ -16,20 +16,20 @@ type BuildsResponse struct {
 }
 
 type Agent struct {
-	Id int `json:"id"`
-	Name string `json:"name"`
-	TypeId int `json:"typeId"`
-	Href string `json:"href"`
+	Id     int    `json:"id"`
+	Name   string `json:"name"`
+	TypeId int    `json:"typeId"`
+	Href   string `json:"href"`
 }
 
 type Build struct {
-	Id int `json:"id"`
+	Id          int    `json:"id"`
 	BuildTypeId string `json:"buildTypeId"`
-	Number string `json:"number"`
-	Status string `json:"status"`
-	State string `json:"state"`
-	Percentage *int  `json:"percentageComplete,omitempty"`
-	BranchName string `json:"branchName"`
-	Href string `json:"href"`
-	Url string `json:"webUrl"`
+	Number      string `json:"number"`
+	Status      string `json:"status"`
+	State       string `json:"state"`
+	Percentage  int    `json:"percentageComplete,omitempty"`
+	BranchName  string `json:"branchName"`
+	Href        string `json:"href"`
+	Url         string `json:"webUrl"`
 }

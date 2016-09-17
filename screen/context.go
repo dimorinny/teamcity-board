@@ -7,6 +7,7 @@ import (
 
 const (
 	oneSecondTimer = "/timer/1s"
+	refreshKey     = "r"
 )
 
 type Context struct {
@@ -25,13 +26,11 @@ func (c *Context) StartScreen(screen Screen) {
 	c.clearHandlers()
 	c.renderContent(screen)
 
-	counter := 0
-	// Only 1 second timer works properly
-	c.AddHandler(oneSecondTimer, func(e ui.Event) {
-		if counter%c.updateInterval == 0 {
-			c.renderContent(screen)
-		}
-		counter += 1
+	c.AddTimerHandler(c.updateInterval, func(e ui.Event) {
+		c.renderContent(screen)
+	})
+	c.AddKeyHandler(refreshKey, func(e ui.Event) {
+		c.renderContent(screen)
 	})
 	screen.StartHandlers()
 }
@@ -58,6 +57,22 @@ func (c *Context) Exit() {
 
 func (c *Context) Close() {
 	ui.Close()
+}
+
+func (c *Context) AddKeyHandler(key string, event func(ui.Event)) {
+	ui.Handle("/sys/kbd/"+key, event)
+}
+
+func (c *Context) AddTimerHandler(seconds int, event func(ui.Event)) {
+	counter := 0
+	// Only 1 second timer works properly in termui
+	ui.Handle(oneSecondTimer, func(e ui.Event) {
+		if counter%seconds == 0 {
+			event(e)
+			counter = 0
+		}
+		counter += 1
+	})
 }
 
 func (c *Context) AddHandler(path string, event func(ui.Event)) {
