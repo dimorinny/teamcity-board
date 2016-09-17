@@ -12,6 +12,7 @@ import (
 const (
 	agentsTitle     = "Agents"
 	buildQueueTitle = "Queue"
+	keyMap          = "Keymap"
 )
 
 type BoardScreen struct {
@@ -32,12 +33,13 @@ func (boardScreen BoardScreen) Content() []*ui.Row {
 
 	return []*ui.Row{
 		ui.NewRow(
-			ui.NewCol(3, 0, boardScreen.getBuildList()),
-			ui.NewCol(2, 0, boardScreen.getBuildProgresses()...),
+			ui.NewCol(6, 0, boardScreen.getBuildList()),
+			ui.NewCol(6, 0, boardScreen.getBuildProgresses()...),
 		),
 		ui.NewRow(
-			ui.NewCol(2, 0, boardScreen.getAgentList()),
-			ui.NewCol(2, 0, boardScreen.getBuildQueue()),
+			ui.NewCol(4, 0, boardScreen.getAgentList()),
+			ui.NewCol(4, 0, boardScreen.getBuildQueue()),
+			ui.NewCol(4, 0, boardScreen.getDescription()),
 		),
 	}
 }
@@ -123,6 +125,17 @@ func (boardScreen BoardScreen) getBuildProgresses() []ui.GridBufferer {
 	}
 
 	return bars
+}
+
+func (boardScreen BoardScreen) getDescription() *ui.Par {
+	par := ui.NewPar(
+		"r - Reload\n" +
+			"Shift + <build-number> - open build info\n",
+	)
+	par.Height = 2 + boardHeight
+	par.BorderLabel = keyMap
+
+	return par
 }
 
 func (boardScreen BoardScreen) getBuildQueue() *ui.List {
