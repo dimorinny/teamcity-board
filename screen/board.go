@@ -1,12 +1,11 @@
 package screen
 
 import (
-	"bytes"
+	"fmt"
 	"github.com/dimorinny/teamcity-board/data"
 	"github.com/dimorinny/teamcity-board/data/model"
 	ui "github.com/gizak/termui"
 	"log"
-	"strconv"
 )
 
 const (
@@ -70,12 +69,12 @@ func (boardScreen BoardScreen) getAgentList() *ui.List {
 	ls.Border = true
 	ls.BorderLabel = agentsTitle
 	for index, agent := range boardScreen.agents {
-		buffer := bytes.NewBufferString("[")
-		buffer.WriteString(strconv.Itoa(index))
-		buffer.WriteString("] ")
-		buffer.WriteString(agent.Name)
-
-		ls.Items = append(ls.Items, buffer.String())
+		agentTitle := fmt.Sprintf(
+			"[%d] %s",
+			index,
+			agent.Name,
+		)
+		ls.Items = append(ls.Items, agentTitle)
 	}
 	ls.ItemFgColor = ui.ColorYellow
 	ls.Height = len(boardScreen.agents) + boardHeight
@@ -88,14 +87,13 @@ func (boardScreen BoardScreen) getBuildList() *ui.List {
 
 	builds := ui.NewList()
 	for index, build := range boardScreen.builds {
-		buffer := bytes.NewBufferString("[")
-		buffer.WriteString(strconv.Itoa(index))
-		buffer.WriteString("] ")
-		buffer.WriteString(build.BranchName)
-		buffer.WriteString(" ")
-		buffer.WriteString(build.Status)
-
-		builds.Items = append(builds.Items, buffer.String())
+		buildTitle := fmt.Sprintf(
+			"[%d] %s %s",
+			index,
+			build.BranchName,
+			build.Status,
+		)
+		builds.Items = append(builds.Items, buildTitle)
 	}
 	builds.Border = false
 	builds.PaddingLeft = 1
@@ -129,8 +127,7 @@ func (boardScreen BoardScreen) getBuildProgresses() []ui.GridBufferer {
 
 func (boardScreen BoardScreen) getDescription() *ui.Par {
 	par := ui.NewPar(
-		"r - Reload\n" +
-			"Shift + <build-number> - open build info\n",
+		"r - Reload\nShift + <build-number> - open build info",
 	)
 	par.Height = 2 + boardHeight
 	par.BorderLabel = keyMap
@@ -143,12 +140,12 @@ func (boardScreen BoardScreen) getBuildQueue() *ui.List {
 	ls.Border = true
 	ls.BorderLabel = buildQueueTitle
 	for index, agent := range boardScreen.agents {
-		buffer := bytes.NewBufferString("[")
-		buffer.WriteString(strconv.Itoa(index))
-		buffer.WriteString("] ")
-		buffer.WriteString(agent.Name)
-
-		ls.Items = append(ls.Items, buffer.String())
+		agentTitle := fmt.Sprintf(
+			"[%d] %s",
+			index,
+			agent.Name,
+		)
+		ls.Items = append(ls.Items, agentTitle)
 	}
 
 	length := len(boardScreen.agents)
