@@ -3,7 +3,8 @@ package main
 import (
 	"github.com/dimorinny/teamcity-board/config"
 	"github.com/dimorinny/teamcity-board/data"
-	"github.com/dimorinny/teamcity-board/screen"
+	"github.com/dimorinny/teamcity-board/view"
+	"github.com/dimorinny/teamcity-board/view/screen"
 	"os"
 )
 
@@ -27,7 +28,7 @@ func init() {
 }
 
 func main() {
-	context := screen.NewContext(
+	context := view.NewContext(
 		configuration.Interval,
 		data.NewTeamcity(configuration.Host),
 	)

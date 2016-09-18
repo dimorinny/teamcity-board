@@ -1,11 +1,11 @@
-package screen
+package view
 
 import (
 	ui "github.com/gizak/termui"
 )
 
 const (
-	boardHeight = 2
+	BoardHeight = 2
 )
 
 type Screen interface {

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/dimorinny/teamcity-board/data"
 	"github.com/dimorinny/teamcity-board/data/model"
+	"github.com/dimorinny/teamcity-board/view"
+	"github.com/dimorinny/teamcity-board/view/widget"
 	ui "github.com/gizak/termui"
 	"log"
 )
@@ -12,23 +14,30 @@ const (
 	agentsTitle     = "Agents"
 	buildQueueTitle = "Queue"
 	keyMap          = "Keymap"
+
+	logMessagesCount   = 5
+	maximumBuildsCount = 10
 )
 
 type BoardScreen struct {
-	context *Context
+	log     widget.LogView
+	context *view.Context
 	agents  []model.Agent
 	builds  []model.Build
 }
 
-func NewBoardScreen(context *Context) Screen {
-	return BoardScreen{
+func NewBoardScreen(context *view.Context) view.Screen {
+	return &BoardScreen{
 		context: context,
+		log:     widget.NewLogView(logMessagesCount),
 	}
 }
 
-func (boardScreen BoardScreen) Content() []*ui.Row {
+func (boardScreen *BoardScreen) Content() []*ui.Row {
 	boardScreen.loadAgents()
+	boardScreen.log.AddMessage("Agents loaded")
 	boardScreen.loadBuilds()
+	boardScreen.log.AddMessage("Builds loaded")
 
 	return []*ui.Row{
 		ui.NewRow(
@@ -40,11 +49,14 @@ func (boardScreen BoardScreen) Content() []*ui.Row {
 			ui.NewCol(4, 0, boardScreen.getBuildQueue()),
 			ui.NewCol(4, 0, boardScreen.getDescription()),
 		),
+		ui.NewRow(
+			ui.NewCol(12, 0, boardScreen.log.GenerateView()),
+		),
 	}
 }
 
 func (boardScreen *BoardScreen) loadAgents() {
-	agents, err := boardScreen.context.client.LoadAgents()
+	agents, err := boardScreen.context.Client.LoadAgents()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -53,9 +65,9 @@ func (boardScreen *BoardScreen) loadAgents() {
 }
 
 func (boardScreen *BoardScreen) loadBuilds() {
-	builds, err := boardScreen.context.client.LoadBuilds(
+	builds, err := boardScreen.context.Client.LoadBuilds(
 		"AndroidProjects_AvitoPro_Build",
-		10,
+		maximumBuildsCount,
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -64,7 +76,7 @@ func (boardScreen *BoardScreen) loadBuilds() {
 	boardScreen.builds = builds
 }
 
-func (boardScreen BoardScreen) getAgentList() *ui.List {
+func (boardScreen *BoardScreen) getAgentList() *ui.List {
 	ls := ui.NewList()
 	ls.Border = true
 	ls.BorderLabel = agentsTitle
@@ -77,12 +89,12 @@ func (boardScreen BoardScreen) getAgentList() *ui.List {
 		ls.Items = append(ls.Items, agentTitle)
 	}
 	ls.ItemFgColor = ui.ColorYellow
-	ls.Height = len(boardScreen.agents) + boardHeight
+	ls.Height = len(boardScreen.agents) + view.BoardHeight
 
 	return ls
 }
 
-func (boardScreen BoardScreen) getBuildList() *ui.List {
+func (boardScreen *BoardScreen) getBuildList() *ui.List {
 	length := len(boardScreen.builds)
 
 	builds := ui.NewList()
@@ -102,7 +114,7 @@ func (boardScreen BoardScreen) getBuildList() *ui.List {
 	return builds
 }
 
-func (boardScreen BoardScreen) getBuildProgresses() []ui.GridBufferer {
+func (boardScreen *BoardScreen) getBuildProgresses() []ui.GridBufferer {
 	bars := []ui.GridBufferer{}
 
 	for _, build := range boardScreen.builds {
@@ -125,17 +137,17 @@ func (boardScreen BoardScreen) getBuildProgresses() []ui.GridBufferer {
 	return bars
 }
 
-func (boardScreen BoardScreen) getDescription() *ui.Par {
+func (boardScreen *BoardScreen) getDescription() *ui.Par {
 	par := ui.NewPar(
 		"r - Reload\nShift + <build-number> - open build info",
 	)
-	par.Height = 2 + boardHeight
+	par.Height = 2 + view.BoardHeight
 	par.BorderLabel = keyMap
 
 	return par
 }
 
-func (boardScreen BoardScreen) getBuildQueue() *ui.List {
+func (boardScreen *BoardScreen) getBuildQueue() *ui.List {
 	ls := ui.NewList()
 	ls.Border = true
 	ls.BorderLabel = buildQueueTitle
@@ -158,12 +170,12 @@ func (boardScreen BoardScreen) getBuildQueue() *ui.List {
 		ls.ItemFgColor = ui.ColorRed
 	}
 
-	ls.Height = length + boardHeight
+	ls.Height = length + view.BoardHeight
 
 	return ls
 }
 
-func (boardScreen BoardScreen) StartHandlers() {
+func (boardScreen *BoardScreen) StartHandlers() {
 	boardScreen.context.AddKeyHandler("w", func(event ui.Event) {
 		boardScreen.context.StartScreen(NewAgentScreen(boardScreen.context))
 	})

@@ -1,4 +1,4 @@
-package screen
+package view
 
 import (
 	"github.com/dimorinny/teamcity-board/data"
@@ -12,13 +12,13 @@ const (
 
 type Context struct {
 	updateInterval int
-	client         *data.Teamcity
+	Client         *data.Teamcity
 }
 
 func NewContext(updateInterval int, client *data.Teamcity) *Context {
 	return &Context{
 		updateInterval: updateInterval,
-		client:         client,
+		Client:         client,
 	}
 }
 
