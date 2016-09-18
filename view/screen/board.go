@@ -13,7 +13,6 @@ import (
 const (
 	agentsTitle     = "Agents"
 	buildQueueTitle = "Queue"
-	keyMap          = "Keymap"
 
 	logMessagesCount   = 5
 	maximumBuildsCount = 10
@@ -47,7 +46,7 @@ func (boardScreen *BoardScreen) Content() []*ui.Row {
 		ui.NewRow(
 			ui.NewCol(4, 0, boardScreen.getAgentList()),
 			ui.NewCol(4, 0, boardScreen.getBuildQueue()),
-			ui.NewCol(4, 0, boardScreen.getDescription()),
+			ui.NewCol(4, 0, widget.GetInfoView()),
 		),
 		ui.NewRow(
 			ui.NewCol(12, 0, boardScreen.log.GenerateView()),
@@ -137,16 +136,6 @@ func (boardScreen *BoardScreen) getBuildProgresses() []ui.GridBufferer {
 	return bars
 }
 
-func (boardScreen *BoardScreen) getDescription() *ui.Par {
-	par := ui.NewPar(
-		"r - Reload\nShift + <build-number> - open build info",
-	)
-	par.Height = 2 + view.BoardHeight
-	par.BorderLabel = keyMap
-
-	return par
-}
-
 func (boardScreen *BoardScreen) getBuildQueue() *ui.List {
 	ls := ui.NewList()
 	ls.Border = true
@@ -177,7 +166,7 @@ func (boardScreen *BoardScreen) getBuildQueue() *ui.List {
 
 func (boardScreen *BoardScreen) StartHandlers() {
 	boardScreen.context.AddKeyHandler("w", func(event ui.Event) {
-		boardScreen.context.StartScreen(NewAgentScreen(boardScreen.context))
+		boardScreen.context.StartScreen(NewAgentScreen(boardScreen.context), true)
 	})
 
 	//for index := range agentScreen.agents {

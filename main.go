@@ -35,7 +35,7 @@ func main() {
 	context.Init()
 	defer context.Close()
 
-	context.StartScreen(screen.NewBoardScreen(context))
+	context.StartScreen(screen.NewBoardScreen(context), true)
 
 	context.StartLoop()
 }

@@ -3,6 +3,7 @@ package screen
 import (
 	"github.com/dimorinny/teamcity-board/data/model"
 	"github.com/dimorinny/teamcity-board/view"
+	"github.com/dimorinny/teamcity-board/view/widget"
 	ui "github.com/gizak/termui"
 )
 
@@ -18,12 +19,11 @@ func NewAgentScreen(context *view.Context) view.Screen {
 }
 
 func (agentScreen *AgentScreen) Content() []*ui.Row {
-	return []*ui.Row{}
-	//ui.NewRow(
-	//	ui.NewCol(4, 0, agentScreen.getAgentsList()),
-	//	ui.NewCol(4, 0, agentScreen.getAgentsList()),
-	//	ui.NewCol(4, 0, agentScreen.getAgentsList()),
-	//),
+	return []*ui.Row{
+		ui.NewRow(
+			ui.NewCol(12, 0, widget.GetInfoView()),
+		),
+	}
 }
 
 func (agentScreen *AgentScreen) StartHandlers() {
