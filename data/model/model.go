@@ -15,6 +15,11 @@ type BuildsResponse struct {
 	Builds []Build `json:"build"`
 }
 
+type QueueResponse struct {
+	BaseResponse
+	Queue []QueueItem `json:"build"`
+}
+
 type Agent struct {
 	Id     int    `json:"id"`
 	Name   string `json:"name"`
@@ -29,6 +34,15 @@ type Build struct {
 	Status      string `json:"status"`
 	State       string `json:"state"`
 	Percentage  int    `json:"percentageComplete,omitempty"`
+	BranchName  string `json:"branchName"`
+	Href        string `json:"href"`
+	Url         string `json:"webUrl"`
+}
+
+type QueueItem struct {
+	Id          int    `json:"id"`
+	BuildTypeId string `json:"buildTypeId"`
+	State       string `json:"state"`
 	BranchName  string `json:"branchName"`
 	Href        string `json:"href"`
 	Url         string `json:"webUrl"`

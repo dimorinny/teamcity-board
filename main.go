@@ -14,7 +14,7 @@ var (
 
 func initConfig() {
 	configuration = config.Config{
-		Interval: 2,
+		Interval: 15,
 		Host: config.HostConfig{
 			Host:       "http://teamcity",
 			Port:       8111,

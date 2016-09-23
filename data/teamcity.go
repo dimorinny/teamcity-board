@@ -51,6 +51,19 @@ func (teamcity *Teamcity) LoadBuilds(buildType string, count int) ([]model.Build
 	return builds.Builds, nil
 }
 
+func (teamcity *Teamcity) LoadQueue() ([]model.QueueItem, error) {
+	queue := &model.QueueResponse{}
+	err := teamcity.load(
+		"GET",
+		"buildQueue",
+		queue,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return queue.Queue, nil
+}
+
 func (teamcity *Teamcity) load(method, url string, response interface{}) error {
 	req, err := http.NewRequest(
 		method,
