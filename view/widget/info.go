@@ -11,7 +11,7 @@ const (
 )
 
 func GetInfoView() *ui.Par {
-	messages := []string {
+	messages := []string{
 		"r - Reload",
 		"b - Back",
 		"Shift + <build-number> - open build info",

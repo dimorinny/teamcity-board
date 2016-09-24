@@ -16,6 +16,8 @@ const (
 
 	logMessagesCount   = 5
 	maximumBuildsCount = 10
+
+	emptyItemHeight = 3
 )
 
 type BoardScreen struct {
@@ -23,6 +25,7 @@ type BoardScreen struct {
 	context *view.Context
 	agents  []model.Agent
 	builds  []model.Build
+	queue   []model.QueueItem
 }
 
 func NewBoardScreen(context *view.Context) view.Screen {
@@ -37,19 +40,53 @@ func (boardScreen *BoardScreen) Content() []*ui.Row {
 	boardScreen.log.AddMessage("Agents loaded")
 	boardScreen.loadBuilds()
 	boardScreen.log.AddMessage("Builds loaded")
+	boardScreen.loadQueue()
+	boardScreen.log.AddMessage("Queue loaded")
 
 	return []*ui.Row{
 		ui.NewRow(
-			ui.NewCol(6, 0, boardScreen.getBuildList()),
-			ui.NewCol(6, 0, boardScreen.getBuildProgresses()...),
+			ui.NewCol(
+				6,
+				0,
+				boardScreen.getBuildList(),
+			),
+			ui.NewCol(
+				6,
+				0,
+				boardScreen.getBuildProgresses()...,
+			),
 		),
 		ui.NewRow(
-			ui.NewCol(4, 0, boardScreen.getAgentList()),
-			ui.NewCol(4, 0, boardScreen.getBuildQueue()),
-			ui.NewCol(4, 0, widget.GetInfoView()),
+			ui.NewCol(
+				4,
+				0,
+				widget.ListOrEmpty(
+					boardScreen.getAgentList(),
+					buildQueueTitle,
+					emptyItemHeight,
+				),
+			),
+			ui.NewCol(
+				4,
+				0,
+				widget.ListOrEmpty(
+					boardScreen.getQueueList(),
+					buildQueueTitle,
+					emptyItemHeight,
+				),
+			),
+			ui.NewCol(
+				4,
+				0,
+				widget.GetInfoView(),
+			),
 		),
 		ui.NewRow(
-			ui.NewCol(12, 0, boardScreen.log.GenerateView()),
+			ui.NewCol(
+				12,
+				0,
+				boardScreen.log.GenerateView(),
+			),
 		),
 	}
 }
@@ -75,6 +112,15 @@ func (boardScreen *BoardScreen) loadBuilds() {
 	boardScreen.builds = builds
 }
 
+func (boardScreen *BoardScreen) loadQueue() {
+	queue, err := boardScreen.context.Client.LoadQueue()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	boardScreen.queue = queue
+}
+
 func (boardScreen *BoardScreen) getAgentList() *ui.List {
 	ls := ui.NewList()
 	ls.Border = true
@@ -87,7 +133,6 @@ func (boardScreen *BoardScreen) getAgentList() *ui.List {
 		)
 		ls.Items = append(ls.Items, agentTitle)
 	}
-	ls.ItemFgColor = ui.ColorYellow
 	ls.Height = len(boardScreen.agents) + view.BoardHeight
 
 	return ls
@@ -136,20 +181,20 @@ func (boardScreen *BoardScreen) getBuildProgresses() []ui.GridBufferer {
 	return bars
 }
 
-func (boardScreen *BoardScreen) getBuildQueue() *ui.List {
+func (boardScreen *BoardScreen) getQueueList() *ui.List {
 	ls := ui.NewList()
 	ls.Border = true
 	ls.BorderLabel = buildQueueTitle
-	for index, agent := range boardScreen.agents {
-		agentTitle := fmt.Sprintf(
+	for index, queue := range boardScreen.queue {
+		queueItemTitle := fmt.Sprintf(
 			"[%d] %s",
 			index,
-			agent.Name,
+			queue.BranchName,
 		)
-		ls.Items = append(ls.Items, agentTitle)
+		ls.Items = append(ls.Items, queueItemTitle)
 	}
 
-	length := len(boardScreen.agents)
+	length := len(boardScreen.queue)
 
 	if length <= 5 {
 		ls.ItemFgColor = ui.ColorGreen
