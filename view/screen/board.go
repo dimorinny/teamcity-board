@@ -10,16 +10,6 @@ import (
 	"log"
 )
 
-const (
-	agentsTitle     = "Agents"
-	buildQueueTitle = "Queue"
-
-	logMessagesCount   = 5
-	maximumBuildsCount = 10
-
-	emptyItemHeight = 3
-)
-
 type BoardScreen struct {
 	log     widget.LogView
 	context *view.Context
