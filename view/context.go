@@ -3,6 +3,7 @@ package view
 import (
 	"github.com/dimorinny/teamcity-board/data"
 	ui "github.com/gizak/termui"
+	"strconv"
 )
 
 const (
@@ -83,6 +84,16 @@ func (c *Context) Close() {
 
 func (c *Context) AddKeyHandler(key string, event func(ui.Event)) {
 	ui.Handle("/sys/kbd/"+key, event)
+}
+
+func (c *Context) AddNumberHandler(event func(int)) {
+	ui.Handle("/sys/kbd/", func(e ui.Event) {
+		if e, ok := e.Data.(ui.EvtKbd); ok {
+			if intKey, err := strconv.Atoi(e.KeyStr); err == nil && intKey > -1 && intKey < 10 {
+				event(intKey)
+			}
+		}
+	})
 }
 
 func (c *Context) AddTimerHandler(seconds int, event func(ui.Event)) {

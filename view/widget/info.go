@@ -14,7 +14,7 @@ func GetInfoView() *ui.Par {
 	messages := []string{
 		"r - Reload",
 		"b - Back",
-		"Shift + <build-number> - open build info",
+		"<build-number> - open build info",
 	}
 
 	par := ui.NewPar(strings.Join(messages, "\n"))

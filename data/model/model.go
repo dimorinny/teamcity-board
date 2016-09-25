@@ -1,5 +1,10 @@
 package model
 
+const (
+	BuildStatusFailure = "FAILURE"
+	BuildStatusSuccess = "SUCCESS"
+)
+
 type Agent struct {
 	Id     int    `json:"id"`
 	Name   string `json:"name"`
@@ -41,6 +46,12 @@ type Event struct {
 	URL      string `json:"webUrl"`
 }
 
+type Triggered struct {
+	Type    string `json:"type"`
+	Details string `json:"details"`
+	Date    string `json:"date"`
+}
+
 type DetailBuild struct {
 	Build
 	BuildType  BuildType `json:"buildType"`
@@ -48,6 +59,8 @@ type DetailBuild struct {
 	StatusText string    `json:"statusText"`
 	StartDate  string    `json:"startDate"`
 	FinishDate string    `json:"finishDate"`
+	Agent      Agent     `json:"agent"`
+	Triggered  Triggered `json:"triggered"`
 }
 
 type QueueItem struct {

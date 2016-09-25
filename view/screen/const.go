@@ -1,7 +1,5 @@
 package screen
 
-import "time"
-
 const (
 	agentsTitle     = "Agents"
 	buildQueueTitle = "Queue"
@@ -9,11 +7,11 @@ const (
 	logMessagesCount   = 5
 	maximumBuildsCount = 10
 
-	emptyItemHeight = 3
-	dateFormat      = time.RFC822
+	emptyItemHeight    = 3
+	teamcityDateFormat = "20060102T150405-0700"
 )
 
 const (
-	checkmarkIcon = "&#9745;"
-	crossIcon     = "&#9746;"
+	checkmarkIcon = "\u2713"
+	crossIcon     = "\u2717"
 )
