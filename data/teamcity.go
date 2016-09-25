@@ -25,9 +25,26 @@ func NewTeamcity(configuration config.HostConfig) *Teamcity {
 	}
 }
 
+func (teamcity *Teamcity) LoadBuild(id int) (*model.DetailBuild, error) {
+	build := &model.DetailBuild{}
+	err := teamcity.load(
+		"GET",
+		fmt.Sprintf("builds/id:%d", id),
+		build,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return build, nil
+}
+
 func (teamcity *Teamcity) LoadAgents() ([]model.Agent, error) {
 	agents := &model.AgentsResponse{}
-	err := teamcity.load("GET", "agents", agents)
+	err := teamcity.load(
+		"GET",
+		"agents",
+		agents,
+	)
 	if err != nil {
 		return nil, err
 	}

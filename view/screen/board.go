@@ -8,6 +8,7 @@ import (
 	"github.com/dimorinny/teamcity-board/view/widget"
 	ui "github.com/gizak/termui"
 	"log"
+	"strconv"
 )
 
 type BoardScreen struct {
@@ -204,9 +205,15 @@ func (boardScreen *BoardScreen) StartHandlers() {
 		boardScreen.context.StartScreen(NewAgentScreen(boardScreen.context), true)
 	})
 
-	//for index := range agentScreen.agents {
-	//	agentScreen.AddHandler("/sys/kbd/" + strconv.Itoa(index), func(event ui.Event) {
-	//
-	//	})
-	//}
+	for index, build := range boardScreen.builds {
+		boardScreen.context.AddKeyHandler(
+			strconv.Itoa(index),
+			func(event ui.Event) {
+				boardScreen.context.StartScreen(
+					NewBuildScreen(boardScreen.context, build.ID),
+					true,
+				)
+			},
+		)
+	}
 }

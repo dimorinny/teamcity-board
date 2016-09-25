@@ -1,5 +1,7 @@
 package screen
 
+import "time"
+
 const (
 	agentsTitle     = "Agents"
 	buildQueueTitle = "Queue"
@@ -8,6 +10,7 @@ const (
 	maximumBuildsCount = 10
 
 	emptyItemHeight = 3
+	dateFormat      = time.RFC822
 )
 
 const (
