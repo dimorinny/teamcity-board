@@ -11,6 +11,9 @@ import (
 const (
 	StateRunning = "running"
 	StatusFail   = "FAILURE"
+
+	BuildStatusFailure = "FAILURE"
+	BuildStatusSuccess = "SUCCESS"
 )
 
 type Teamcity struct {

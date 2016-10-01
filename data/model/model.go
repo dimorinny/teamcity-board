@@ -1,10 +1,5 @@
 package model
 
-const (
-	BuildStatusFailure = "FAILURE"
-	BuildStatusSuccess = "SUCCESS"
-)
-
 type Agent struct {
 	Id     int    `json:"id"`
 	Name   string `json:"name"`

@@ -56,6 +56,13 @@ func (buildScreen *BuildScreen) Content() []*ui.Row {
 			ui.NewCol(
 				12,
 				0,
+				buildScreen.ProgressBlock(),
+			),
+		),
+		ui.NewRow(
+			ui.NewCol(
+				12,
+				0,
 				buildScreen.log.GenerateView(),
 			),
 		),
@@ -65,9 +72,9 @@ func (buildScreen *BuildScreen) Content() []*ui.Row {
 func (buildScreen *BuildScreen) StatusBlock() *ui.Par {
 	icon := buildScreen.GetBuildIcon()
 
-	if buildScreen.build.Status == model.BuildStatusFailure {
+	if buildScreen.build.Status == data.BuildStatusFailure {
 		icon = crossIcon
-	} else if buildScreen.build.Status == model.BuildStatusSuccess {
+	} else if buildScreen.build.Status == data.BuildStatusSuccess {
 		icon = checkmarkIcon
 	} else {
 		icon = ""
@@ -78,6 +85,26 @@ func (buildScreen *BuildScreen) StatusBlock() *ui.Par {
 	par.TextFgColor = buildScreen.GetBuildColor()
 
 	return par
+}
+
+func (buildScreen *BuildScreen) ProgressBlock() *ui.Gauge {
+	g := ui.NewGauge()
+	g.Percent = buildScreen.build.Percentage
+	g.Float = ui.AlignLeft
+
+	if buildScreen.build.State == data.StateRunning {
+		g.Height = 3
+	} else {
+		g.Height = 0
+	}
+
+	if buildScreen.build.Status == data.StatusFail {
+		g.BarColor = ui.ColorRed
+	} else {
+		g.BarColor = ui.ColorGreen
+	}
+
+	return g
 }
 
 func (buildScreen *BuildScreen) LoadBuild() {
@@ -159,9 +186,9 @@ func (buildScreen *BuildScreen) GetRightInfoBlock() *ui.Par {
 func (buildScreen *BuildScreen) GetBuildColor() ui.Attribute {
 	var color ui.Attribute
 
-	if buildScreen.build.Status == model.BuildStatusFailure {
+	if buildScreen.build.Status == data.BuildStatusFailure {
 		color = ui.ColorRed
-	} else if buildScreen.build.Status == model.BuildStatusSuccess {
+	} else if buildScreen.build.Status == data.BuildStatusSuccess {
 		color = ui.ColorGreen
 	} else {
 		color = ui.ColorWhite
@@ -173,9 +200,9 @@ func (buildScreen *BuildScreen) GetBuildColor() ui.Attribute {
 func (buildScreen *BuildScreen) GetBuildIcon() string {
 	var icon string
 
-	if buildScreen.build.Status == model.BuildStatusFailure {
+	if buildScreen.build.Status == data.BuildStatusFailure {
 		icon = crossIcon
-	} else if buildScreen.build.Status == model.BuildStatusSuccess {
+	} else if buildScreen.build.Status == data.BuildStatusSuccess {
 		icon = checkmarkIcon
 	} else {
 		icon = ""
