@@ -16,17 +16,25 @@ func NewTeamcityBrowser(configuration config.HostConfig) *TeamcityBrowser {
 	}
 }
 
-func (browser *TeamcityBrowser) OpenBoard(buildType string) {
+func (browser *TeamcityBrowser) OpenBoard(projectID string) {
 	open.Run(
 		fmt.Sprintf(
 			"%s:%d/project.html?projectId=%s",
 			browser.configuration.Host,
 			browser.configuration.Port,
-			buildType,
+			projectID,
 		),
 	)
 }
 
-func (browser *TeamcityBrowser) OpenBuild(id int) {
-
+func (browser *TeamcityBrowser) OpenBuild(buildTypeID string, id int) {
+	open.Run(
+		fmt.Sprintf(
+			"%s:%d/viewLog.html?buildId=%d&buildTypeId=%s",
+			browser.configuration.Host,
+			browser.configuration.Port,
+			id,
+			buildTypeID,
+		),
+	)
 }

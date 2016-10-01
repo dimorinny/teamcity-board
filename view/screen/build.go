@@ -211,4 +211,11 @@ func (buildScreen *BuildScreen) GetBuildIcon() string {
 	return icon
 }
 
-func (buildScreen *BuildScreen) StartHandlers() {}
+func (buildScreen *BuildScreen) StartHandlers() {
+	buildScreen.context.AddKeyHandler("o", func(e ui.Event) {
+		buildScreen.context.Browser.OpenBuild(
+			"AndroidProjects_AvitoPro_Build",
+			buildScreen.buildId,
+		)
+	})
+}
