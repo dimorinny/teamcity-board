@@ -2,6 +2,7 @@ package screen
 
 import (
 	"fmt"
+	"github.com/dimorinny/teamcity-board/data"
 	"github.com/dimorinny/teamcity-board/data/model"
 	"github.com/dimorinny/teamcity-board/view"
 	"github.com/dimorinny/teamcity-board/view/widget"
@@ -34,6 +35,13 @@ func (buildScreen *BuildScreen) Content() []*ui.Row {
 	return []*ui.Row{
 		ui.NewRow(
 			ui.NewCol(
+				12,
+				0,
+				buildScreen.StatusBlock(),
+			),
+		),
+		ui.NewRow(
+			ui.NewCol(
 				6,
 				0,
 				buildScreen.GetLeftInfoBlock(),
@@ -54,6 +62,24 @@ func (buildScreen *BuildScreen) Content() []*ui.Row {
 	}
 }
 
+func (buildScreen *BuildScreen) StatusBlock() *ui.Par {
+	icon := buildScreen.GetBuildIcon()
+
+	if buildScreen.build.Status == model.BuildStatusFailure {
+		icon = crossIcon
+	} else if buildScreen.build.Status == model.BuildStatusSuccess {
+		icon = checkmarkIcon
+	} else {
+		icon = ""
+	}
+
+	par := ui.NewPar(fmt.Sprintf("STATUS: %s %s", buildScreen.build.Status, icon))
+	par.Height = 3
+	par.TextFgColor = buildScreen.GetBuildColor()
+
+	return par
+}
+
 func (buildScreen *BuildScreen) LoadBuild() {
 	build, err := buildScreen.context.Client.LoadBuild(buildScreen.buildId)
 	if err != nil {
@@ -65,27 +91,24 @@ func (buildScreen *BuildScreen) LoadBuild() {
 
 func (buildScreen *BuildScreen) GetLeftInfoBlock() *ui.Par {
 	var (
-		icon                  string
 		err                   error
 		startDate, finishDate time.Time
 	)
 
-	if buildScreen.build.Status == model.BuildStatusFailure {
-		icon = crossIcon
-	} else if buildScreen.build.Status == model.BuildStatusSuccess {
-		icon = checkmarkIcon
+	startDate, err = time.Parse(teamcityDateFormat, buildScreen.build.StartDate)
+
+	if buildScreen.build.State == data.StateRunning {
+		finishDate = time.Now()
 	} else {
-		icon = ""
+		finishDate, err = time.Parse(teamcityDateFormat, buildScreen.build.FinishDate)
 	}
 
-	startDate, err = time.Parse(teamcityDateFormat, buildScreen.build.StartDate)
-	finishDate, err = time.Parse(teamcityDateFormat, buildScreen.build.FinishDate)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	messages := []string{
-		fmt.Sprintf("Result: %s %s", buildScreen.build.StatusText, icon),
+		buildScreen.build.StatusText,
 		"Time: " + fmt.Sprintf(
 			"%s - %s",
 			startDate,
@@ -96,7 +119,6 @@ func (buildScreen *BuildScreen) GetLeftInfoBlock() *ui.Par {
 
 	par := ui.NewPar(strings.Join(messages, "\n"))
 	par.Height = len(messages) + view.BoardHeight
-	par.TextFgColor = buildScreen.GetBuildColor()
 
 	return par
 }
@@ -130,7 +152,6 @@ func (buildScreen *BuildScreen) GetRightInfoBlock() *ui.Par {
 
 	par := ui.NewPar(strings.Join(messages, "\n"))
 	par.Height = 3 + view.BoardHeight
-	par.TextFgColor = buildScreen.GetBuildColor()
 
 	return par
 }
@@ -147,6 +168,20 @@ func (buildScreen *BuildScreen) GetBuildColor() ui.Attribute {
 	}
 
 	return color
+}
+
+func (buildScreen *BuildScreen) GetBuildIcon() string {
+	var icon string
+
+	if buildScreen.build.Status == model.BuildStatusFailure {
+		icon = crossIcon
+	} else if buildScreen.build.Status == model.BuildStatusSuccess {
+		icon = checkmarkIcon
+	} else {
+		icon = ""
+	}
+
+	return icon
 }
 
 func (buildScreen *BuildScreen) StartHandlers() {}

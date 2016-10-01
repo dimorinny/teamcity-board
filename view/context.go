@@ -27,7 +27,6 @@ func NewContext(updateInterval int, client *data.Teamcity) *Context {
 
 func (c *Context) StartScreen(screen Screen, addToBackStack bool) {
 	c.clearHandlers()
-	c.renderContent(screen)
 
 	c.AddTimerHandler(c.updateInterval, func(e ui.Event) {
 		c.renderContent(screen)
@@ -39,6 +38,8 @@ func (c *Context) StartScreen(screen Screen, addToBackStack bool) {
 		c.Back()
 	})
 	screen.StartHandlers()
+
+	c.renderContent(screen)
 
 	if addToBackStack {
 		c.backStack = append(c.backStack, screen)

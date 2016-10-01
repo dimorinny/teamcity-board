@@ -200,10 +200,6 @@ func (boardScreen *BoardScreen) getQueueList() *ui.List {
 }
 
 func (boardScreen *BoardScreen) StartHandlers() {
-	boardScreen.context.AddKeyHandler("w", func(event ui.Event) {
-		boardScreen.context.StartScreen(NewAgentScreen(boardScreen.context), true)
-	})
-
 	boardScreen.context.AddNumberHandler(func(key int) {
 		if len(boardScreen.builds) > key {
 			boardScreen.context.StartScreen(
