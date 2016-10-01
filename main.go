@@ -31,6 +31,7 @@ func main() {
 	context := view.NewContext(
 		configuration.Interval,
 		data.NewTeamcity(configuration.Host),
+		data.NewTeamcityBrowser(configuration.Host),
 	)
 	context.Init()
 	defer context.Close()

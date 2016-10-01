@@ -16,12 +16,14 @@ type Context struct {
 	updateInterval int
 	backStack      []Screen
 	Client         *data.Teamcity
+	Browser        *data.TeamcityBrowser
 }
 
-func NewContext(updateInterval int, client *data.Teamcity) *Context {
+func NewContext(updateInterval int, client *data.Teamcity, browser *data.TeamcityBrowser) *Context {
 	return &Context{
 		updateInterval: updateInterval,
 		Client:         client,
+		Browser:        browser,
 	}
 }
 

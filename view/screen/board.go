@@ -200,6 +200,9 @@ func (boardScreen *BoardScreen) getQueueList() *ui.List {
 }
 
 func (boardScreen *BoardScreen) StartHandlers() {
+	boardScreen.context.AddKeyHandler("o", func(e ui.Event) {
+		boardScreen.context.Browser.OpenBoard("AndroidProjects_AvitoPro")
+	})
 	boardScreen.context.AddNumberHandler(func(key int) {
 		if len(boardScreen.builds) > key {
 			boardScreen.context.StartScreen(
