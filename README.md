@@ -10,15 +10,17 @@ You should download binary file for [MacOS](https://github.com/dimorinny/teamcit
 
 | Param                      |      Description                                       | Type    |  Required | Default Value |
 |:---------------------------|:-------------------------------------------------------|:--------|:----------|:--------------|
-| TEAMCITY\_HOST             | Teamcity host (For example http://teamcity.ru)         | String  | yes       | no            |
+| TEAMCITY\_HOST             | Teamcity host                                          | String  | yes       | no            |
 | TEAMCITY\_PORT             | Teamcity port                                          | Int     | no        | 8111          |
 | TEAMCITY\_PROJECT\_ID      | Project id which you want to monitor                   | String  | yes       | no            |
 | TEAMCITY\_AUTH\_HEADER     | Basic auth header for base64(login:password)           | String  | yes       | no            |
 | TEAMCITY\_UPDATE\_INTERVAL | Interval in seconds between data update                | Int     | no        | 15            |
 
-You may add this params to starting command
-```TEAMCITY_HOST="http://teamcity" TEAMCITY_AUTH_HEADER="Basic <token>" TEAMCITY_PROJECT_ID="AndroidProjects_AvitoPro" ./teamcity-board```
- or set it in `~/.bashrc` file.
+You may add this params to starting command:
+```
+TEAMCITY_HOST="http://teamcity" TEAMCITY_AUTH_HEADER="Basic <token>" TEAMCITY_PROJECT_ID="AndroidProjects_AvitoPro" ./teamcity-board
+```
+or set it in `~/.bashrc` file.
 
 ## Warning
 
