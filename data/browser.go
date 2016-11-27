@@ -7,10 +7,10 @@ import (
 )
 
 type TeamcityBrowser struct {
-	configuration config.HostConfig
+	configuration config.Config
 }
 
-func NewTeamcityBrowser(configuration config.HostConfig) *TeamcityBrowser {
+func NewTeamcityBrowser(configuration config.Config) *TeamcityBrowser {
 	return &TeamcityBrowser{
 		configuration: configuration,
 	}

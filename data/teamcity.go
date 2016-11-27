@@ -18,11 +18,11 @@ const (
 )
 
 type Teamcity struct {
-	configuration config.HostConfig
+	configuration config.Config
 	client        http.Client
 }
 
-func NewTeamcity(configuration config.HostConfig) *Teamcity {
+func NewTeamcity(configuration config.Config) *Teamcity {
 	return &Teamcity{
 		configuration: configuration,
 		client:        http.Client{},
