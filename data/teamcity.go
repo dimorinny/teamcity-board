@@ -10,6 +10,7 @@ import (
 
 const (
 	StateRunning = "running"
+	StateQueued  = "queued"
 	StatusFail   = "FAILURE"
 
 	BuildStatusFailure = "FAILURE"
@@ -29,16 +30,16 @@ func NewTeamcity(configuration config.HostConfig) *Teamcity {
 }
 
 func (teamcity *Teamcity) LoadBuild(id int) (*model.DetailBuild, error) {
-	build := &model.DetailBuild{}
+	buildDetail := &model.DetailBuild{}
 	err := teamcity.load(
 		"GET",
 		fmt.Sprintf("builds/id:%d", id),
-		build,
+		buildDetail,
 	)
 	if err != nil {
 		return nil, err
 	}
-	return build, nil
+	return buildDetail, nil
 }
 
 func (teamcity *Teamcity) LoadAgents() ([]model.Agent, error) {
@@ -68,7 +69,16 @@ func (teamcity *Teamcity) LoadBuilds(buildType string, count int) ([]model.Build
 	if err != nil {
 		return nil, err
 	}
-	return builds.Builds, nil
+
+	result := []model.Build{}
+
+	for _, value := range builds.Builds {
+		if value.State != StateQueued {
+			result = append(result, value)
+		}
+	}
+
+	return result, nil
 }
 
 func (teamcity *Teamcity) LoadQueue() ([]model.QueueItem, error) {

@@ -16,13 +16,16 @@ type BuildScreen struct {
 	log     widget.LogView
 	context *view.Context
 
-	build   model.DetailBuild
+	project model.Project
 	buildId int
+
+	build model.DetailBuild
 }
 
-func NewBuildScreen(context *view.Context, buildId int) view.Screen {
+func NewBuildScreen(context *view.Context, project model.Project, buildId int) view.Screen {
 	return &BuildScreen{
 		context: context,
+		project: project,
 		buildId: buildId,
 		log:     widget.NewLogView(logMessagesCount),
 	}
@@ -214,7 +217,7 @@ func (buildScreen *BuildScreen) GetBuildIcon() string {
 func (buildScreen *BuildScreen) StartHandlers() {
 	buildScreen.context.AddKeyHandler("o", func(e ui.Event) {
 		buildScreen.context.Browser.OpenBuild(
-			"AndroidProjects_AvitoPro_Build",
+			buildScreen.project.BuildID,
 			buildScreen.buildId,
 		)
 	})

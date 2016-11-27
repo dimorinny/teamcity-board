@@ -1,8 +1,8 @@
 package data
 
 import (
-	"github.com/dimorinny/teamcity-board/config"
 	"fmt"
+	"github.com/dimorinny/teamcity-board/config"
 	"github.com/skratchdot/open-golang/open"
 )
 

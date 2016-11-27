@@ -13,14 +13,17 @@ import (
 type BoardScreen struct {
 	log     widget.LogView
 	context *view.Context
-	agents  []model.Agent
-	builds  []model.Build
-	queue   []model.QueueItem
+	project model.Project
+
+	agents []model.Agent
+	builds []model.Build
+	queue  []model.QueueItem
 }
 
-func NewBoardScreen(context *view.Context) view.Screen {
+func NewBoardScreen(context *view.Context, project model.Project) view.Screen {
 	return &BoardScreen{
 		context: context,
+		project: project,
 		log:     widget.NewLogView(logMessagesCount),
 	}
 }
@@ -92,7 +95,7 @@ func (boardScreen *BoardScreen) loadAgents() {
 
 func (boardScreen *BoardScreen) loadBuilds() {
 	builds, err := boardScreen.context.Client.LoadBuilds(
-		"AndroidProjects_AvitoPro_Build",
+		boardScreen.project.BuildID,
 		maximumBuildsCount,
 	)
 	if err != nil {
@@ -115,13 +118,8 @@ func (boardScreen *BoardScreen) getAgentList() *ui.List {
 	ls := ui.NewList()
 	ls.Border = true
 	ls.BorderLabel = agentsTitle
-	for index, agent := range boardScreen.agents {
-		agentTitle := fmt.Sprintf(
-			"[%d] %s",
-			index,
-			agent.Name,
-		)
-		ls.Items = append(ls.Items, agentTitle)
+	for _, agent := range boardScreen.agents {
+		ls.Items = append(ls.Items, agent.Name)
 	}
 	ls.Height = len(boardScreen.agents) + view.BoardHeight
 
@@ -142,7 +140,6 @@ func (boardScreen *BoardScreen) getBuildList() *ui.List {
 		builds.Items = append(builds.Items, buildTitle)
 	}
 	builds.Border = false
-	builds.PaddingLeft = 1
 	builds.Height = length
 
 	return builds
@@ -175,13 +172,8 @@ func (boardScreen *BoardScreen) getQueueList() *ui.List {
 	ls := ui.NewList()
 	ls.Border = true
 	ls.BorderLabel = buildQueueTitle
-	for index, queue := range boardScreen.queue {
-		queueItemTitle := fmt.Sprintf(
-			"[%d] %s",
-			index,
-			queue.BranchName,
-		)
-		ls.Items = append(ls.Items, queueItemTitle)
+	for _, queue := range boardScreen.queue {
+		ls.Items = append(ls.Items, queue.BranchName)
 	}
 
 	length := len(boardScreen.queue)
@@ -201,12 +193,16 @@ func (boardScreen *BoardScreen) getQueueList() *ui.List {
 
 func (boardScreen *BoardScreen) StartHandlers() {
 	boardScreen.context.AddKeyHandler("o", func(e ui.Event) {
-		boardScreen.context.Browser.OpenBoard("AndroidProjects_AvitoPro")
+		boardScreen.context.Browser.OpenBoard(boardScreen.project.ID)
 	})
 	boardScreen.context.AddNumberHandler(func(key int) {
 		if len(boardScreen.builds) > key {
 			boardScreen.context.StartScreen(
-				NewBuildScreen(boardScreen.context, boardScreen.builds[key].ID),
+				NewBuildScreen(
+					boardScreen.context,
+					boardScreen.project,
+					boardScreen.builds[key].ID,
+				),
 				true,
 			)
 		}
